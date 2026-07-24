@@ -1,0 +1,98 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "warn",
+    "output": "box.log",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "type": "https",
+        "tag": "doh-cf",
+        "server": "1.1.1.1"
+      }
+    ],
+    "final": "doh-cf"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "address": [
+        "172.19.0.1/30"
+      ],
+      "auto_route": true,
+      "strict_route": false
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "socks",
+      "tag": "ciadpi-proxy",
+      "server": "127.0.0.1",
+      "server_port": 1080
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    }
+  ],
+  "route": {
+    "rules": [
+      {
+        "inbound": ["tun-in"],
+        "action": "sniff"
+      },
+      {
+        "port": [53],
+        "action": "hijack-dns"
+      },
+      {
+        "port": [5353],
+        "network": ["udp"],
+        "outbound": "direct"
+      },
+      {
+        "process_name": ["ciadpi"],
+        "outbound": "direct"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "direct"
+      },
+      {
+        "port": [443],
+        "network": ["udp"],
+        "action": "reject",
+        "method": "drop"
+      },
+      {
+        "process_name": [
+          "Discord",
+          "Discord Helper",
+          "Roblox",
+          "RobloxPlayer",
+          "RobloxStudio",
+          "RobloxStudioBeta"
+        ],
+        "outbound": "ciadpi-proxy"
+      },
+      {
+        "domain_suffix": [
+          "discord.com",
+          "discord.gg",
+          "discordapp.com",
+          "discordapp.net",
+          "discord.media",
+          "roblox.com",
+          "rbxcdn.com",
+          "roblox.la"
+        ],
+        "outbound": "ciadpi-proxy"
+      }
+    ],
+    "final": "direct",
+    "default_interface": "en0"
+  }
+}
