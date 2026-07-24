@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname "$0")"
+# Run from the project root; binaries land in bin/.
+cd "$(dirname "$0")/.."
 
 SINGBOX_TAG="v1.13.14"
 BYEDPI_REF="ba53229"
@@ -67,7 +68,7 @@ rm -rf "$BYEDPI_DIR"
 git clone --quiet https://github.com/hufrea/byedpi.git "$BYEDPI_DIR"
 git -c advice.detachedHead=false -C "$BYEDPI_DIR" checkout --quiet "$BYEDPI_REF"
 if ! make -C "$BYEDPI_DIR" >"$BUILD_LOG" 2>&1; then cat "$BUILD_LOG"; exit 1; fi
-cp "$BYEDPI_DIR/ciadpi" ./ciadpi
+cp "$BYEDPI_DIR/ciadpi" ./bin/ciadpi
 
 echo "Building sing-box ($SINGBOX_TAG)..."
 rm -rf "$SINGBOX_DIR"
@@ -77,8 +78,8 @@ export GOTOOLCHAIN=local
 if ! CGO_ENABLED=1 go build -C "$SINGBOX_DIR" -trimpath \
     -tags "$(cat "$SINGBOX_DIR/release/DEFAULT_BUILD_TAGS")" \
     -ldflags "-X 'github.com/sagernet/sing-box/constant.Version=${SINGBOX_TAG#v}' $(cat "$SINGBOX_DIR/release/LDFLAGS") -s -w -buildid=" \
-    -o ../sing-box ./cmd/sing-box >"$BUILD_LOG" 2>&1; then cat "$BUILD_LOG"; exit 1; fi
+    -o ../bin/sing-box ./cmd/sing-box >"$BUILD_LOG" 2>&1; then cat "$BUILD_LOG"; exit 1; fi
 
 echo "Done."
-./ciadpi --version
-./sing-box version | head -1
+./bin/ciadpi --version
+./bin/sing-box version | head -1

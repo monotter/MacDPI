@@ -1,6 +1,6 @@
-box.log
-service.log
+logs/*.log
 .build-byedpi
 .build-singbox
-ciadpi
-sing-box
+bin/ciadpi
+bin/sing-box
+config.json

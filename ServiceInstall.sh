@@ -14,9 +14,9 @@ case "$DIR/" in
         exit 1 ;;
 esac
 
-if [ ! -x ./ciadpi ] || ! ./ciadpi --version >/dev/null 2>&1 \
-   || [ ! -x ./sing-box ] || ! ./sing-box version >/dev/null 2>&1; then
-    ./Build.sh
+if [ ! -x ./bin/ciadpi ] || ! ./bin/ciadpi --version >/dev/null 2>&1 \
+   || [ ! -x ./bin/sing-box ] || ! ./bin/sing-box version >/dev/null 2>&1; then
+    ./bin/Build.sh
 fi
 
 tmp=$(mktemp)
@@ -38,6 +38,8 @@ cat > "$tmp" <<EOF
     <dict>
         <key>PATH</key>
         <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+        <key>MACDPI_SERVICE</key>
+        <string>1</string>
     </dict>
     <key>RunAtLoad</key>
     <true/>
@@ -46,12 +48,15 @@ cat > "$tmp" <<EOF
     <key>ThrottleInterval</key>
     <integer>10</integer>
     <key>StandardOutPath</key>
-    <string>$DIR/service.log</string>
+    <string>$DIR/logs/service.log</string>
     <key>StandardErrorPath</key>
-    <string>$DIR/service.log</string>
+    <string>$DIR/logs/service.log</string>
 </dict>
 </plist>
 EOF
+
+# launchd opens the log paths at launch, so the folder must exist first.
+mkdir -p logs
 
 sudo launchctl bootout system/"$LABEL" 2>/dev/null || true
 sudo cp "$tmp" "$PLIST"

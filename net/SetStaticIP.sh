@@ -46,6 +46,6 @@ done
 if [ "$new_ip" = "$static_ip" ]; then
     echo "Static IP set: $new_ip"
 else
-    echo "Expected $static_ip but got $new_ip. Run ./UnsetStaticIP.sh to return to DHCP."
+    echo "Expected $static_ip but got $new_ip. Run ./net/UnsetStaticIP.sh to return to DHCP."
     exit 1
 fi

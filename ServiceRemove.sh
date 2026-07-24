@@ -7,6 +7,6 @@ PLIST="/Library/LaunchDaemons/$LABEL.plist"
 
 sudo launchctl bootout system/"$LABEL" 2>/dev/null || true
 sudo rm -f "$PLIST"
-./UnsetStaticIP.sh 2>/dev/null || true
+./net/UnsetStaticIP.sh 2>/dev/null || true
 
 echo "Service removed."
